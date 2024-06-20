@@ -1,21 +1,34 @@
 package main
 
 import (
-    "fmt"
-    "code-runner/backend/lib/routing"
+	"code-runner/backend/lib/routing"
+	"fmt"
+	"log"
+	"net/http"
+	"time"
 )
 
-func main () {
-    server := routing.CreateServer(&routing.Options{
-        Host: "0.0.0.0",
-        Port: 8080,
-    })
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next.ServeHTTP(w, r)
+		log.Printf("%s %s %s", r.Method, r.RequestURI, time.Since(start))
+	})
+}
 
-    err:=server.ListenAndServe()
+func main() {
+	host := "localhost"
+	port := 8080
+	server := routing.CreateServer(&routing.Options{
+		Host:        host,
+		Port:        port,
+		Middlewares: []routing.Middleware{loggingMiddleware},
+	})
 
-    if err != nil {
-        fmt.Println(err)
-    } 
+	log.Printf("Server starting on %s:%v",host,port)
+	err := server.ListenAndServe()
 
-    fmt.Println("Test")
+	if err != nil {
+		fmt.Println(err)
+	}
 }
