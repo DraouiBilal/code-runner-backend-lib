@@ -17,15 +17,12 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
-	host := "localhost"
-	port := 8080
 	server := routing.CreateServer(&routing.Options{
-		Host:        host,
-		Port:        port,
 		Middlewares: []routing.Middleware{loggingMiddleware},
 	})
 
-	log.Printf("Server starting on %s:%v",host,port)
+	log.Printf("Server starting on %s",server.Addr)
+
 	err := server.ListenAndServe()
 
 	if err != nil {

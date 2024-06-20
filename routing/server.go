@@ -26,7 +26,19 @@ func createHandler(middlewares []Middleware) (http.Handler) {
 func CreateServer (options *Options) (*http.Server) {
     handler := createHandler(options.Middlewares)
     
-    address := options.Host + ":" + strconv.Itoa(options.Port)
+    host := "localhost"
+
+    if options.Host!="" {
+        host = options.Host
+    }
+
+    port := 8080
+
+    if options.Port!=0 {
+        port = options.Port
+    }
+
+    address := host + ":" + strconv.Itoa(port)
 
     server := http.Server {
         Addr: address,
