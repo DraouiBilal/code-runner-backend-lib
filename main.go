@@ -17,7 +17,18 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
-	server := routing.CreateServer(&routing.Options{
+    dockerRouter := routing.Router{
+    }	
+
+    dockerRouter.Get("/test/{id}", func (w http.ResponseWriter, req *http.Request){
+        fmt.Fprint(w,"Testing if it works")
+    }, []routing.Middleware{})
+
+    server := routing.Server{}
+    
+    server.AddRouter(&dockerRouter)
+
+    server.InitServer(&routing.Options{
 		Middlewares: []routing.Middleware{loggingMiddleware},
 	})
 

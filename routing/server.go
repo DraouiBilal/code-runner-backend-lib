@@ -1,9 +1,14 @@
 package routing
 
 import (
-    "net/http"
-    "strconv"
+	"net/http"
+	"strconv"
 )
+
+type Server struct {
+    http.Server
+    Routers []*Router
+}
 
 type Middleware func(http.Handler) http.Handler
 
@@ -14,18 +19,36 @@ type Options struct {
 }
 
 
-func createHandler(middlewares []Middleware) (http.Handler) {
+func (server *Server) createHandler(middlewares []Middleware ) (http.Handler) {
     mux := http.NewServeMux()
+
+    for _, router := range server.Routers {
+        base:=""
+        
+        if router.Name!=""{
+            base = "/" + router.Name
+        }
+
+        for _, route := range router.Routes{
+            mux.Handle(route.Method + " " + base + route.Path, route.Handler)
+        }
+    }
+
     var handler http.Handler = mux
+
     for _,middleware := range middlewares {
         handler = middleware(handler)
     }
+
     return handler
 }
 
-func CreateServer (options *Options) (*http.Server) {
-    handler := createHandler(options.Middlewares)
-    
+func (server *Server) AddRouter (router *Router){
+    server.Routers = append(server.Routers, router)
+}
+
+func (server *Server) InitServer (options *Options) {
+    handler := server.createHandler(options.Middlewares)
     host := "localhost"
 
     if options.Host!="" {
@@ -40,11 +63,9 @@ func CreateServer (options *Options) (*http.Server) {
 
     address := host + ":" + strconv.Itoa(port)
 
-    server := http.Server {
+    server.Server = http.Server {
         Addr: address,
         Handler: handler,
     }
-    
-    return &server
 }
 
