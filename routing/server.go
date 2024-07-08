@@ -7,6 +7,8 @@ import (
 
 type Server struct {
     http.Server
+    Protocol string
+    FullAddr string
     Routers []*Router
 }
 
@@ -15,6 +17,7 @@ type Middleware func(http.Handler) http.Handler
 type Options struct {
     Host string
     Port int
+    Protocol string
     Middlewares []Middleware
 }
 
@@ -49,6 +52,13 @@ func (server *Server) AddRouter (router *Router){
 
 func (server *Server) InitServer (options *Options) {
     handler := server.createHandler(options.Middlewares)
+
+    protocol := "http"
+
+    if options.Host!="" {
+        protocol = options.Protocol
+    }
+
     host := "localhost"
 
     if options.Host!="" {
@@ -67,5 +77,8 @@ func (server *Server) InitServer (options *Options) {
         Addr: address,
         Handler: handler,
     }
+    
+    server.Protocol = protocol
+    server.FullAddr = server.Protocol + "://" + server.Addr
 }
 
