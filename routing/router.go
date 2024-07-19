@@ -2,14 +2,6 @@ package routing
 
 import "net/http"
 
-type Handler struct {
-    handler func(w http.ResponseWriter, r *http.Request)
-}
-
-func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    h.handler(w,r)
-}
-
 type Route struct {
     Path string
     Method string

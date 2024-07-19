@@ -21,6 +21,9 @@ func main() {
     }	
 
     dockerRouter.Get("/test/{id}", func (w http.ResponseWriter, req *http.Request){
+        
+        fmt.Println("Query")
+        fmt.Println(req.URL.Parse(""))
         fmt.Fprint(w,"Testing if it works")
     }, []routing.Middleware{})
 
