@@ -2,6 +2,14 @@ package routing
 
 import "net/http"
 
+type handler struct {
+    handler func(w http.ResponseWriter, r *http.Request)
+}
+
+func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    h.handler(w,r)
+}
+
 type Route struct {
     Path string
     Method string
@@ -9,7 +17,7 @@ type Route struct {
 }
 
 func createRoute(method string, path string, handleFunc func(http.ResponseWriter, *http.Request), middlewares []Middleware) *Route {
-    var handler http.Handler = Handler{
+    var handler http.Handler = handler{
         handler: handleFunc,
     }
     if len(middlewares)!=0{
