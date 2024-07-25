@@ -32,7 +32,7 @@ func createRequest(url string, method string, body interface{}, options Options)
     return req
 }
 
-func MakeRequest[T any](url string, method string, body interface{}, options Options) *T {
+func makeRequest[T any](url string, method string, body interface{}, options Options) *T {
     client := &http.Client{}
 
     req := createRequest(url, method, body, options)
@@ -58,5 +58,30 @@ func MakeRequest[T any](url string, method string, body interface{}, options Opt
     if err != nil {
         log.Fatal(err)
     }
+
     return responseJson
+}
+
+func Get[T any](url string, body interface{}, options Options) *T {
+    return makeRequest[T](url, http.MethodGet, body, options)
+}
+
+func Post[T any](url string, body interface{}, options Options) *T {
+    return makeRequest[T](url, http.MethodPost, body, options)
+}
+
+func Put[T any](url string, body interface{}, options Options) *T {
+    return makeRequest[T](url, http.MethodPut, body, options)
+}
+
+func Patch[T any](url string, body interface{}, options Options) *T {
+    return makeRequest[T](url, http.MethodPatch, body, options)
+}
+
+func Delete[T any](url string, body interface{}, options Options) *T {
+    return makeRequest[T](url, http.MethodDelete, body, options)
+}
+
+func Option[T any](url string, body interface{}, options Options) *T {
+    return makeRequest[T](url, http.MethodOptions, body, options)
 }

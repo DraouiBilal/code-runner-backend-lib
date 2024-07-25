@@ -37,6 +37,6 @@ func main() {
     type Test struct {
         Test string `json:"test"`
     }
-    response := api.MakeRequest[Test]("http://localhost:8080/docker/test/5","GET", struct{test string}{test: "test"},api.Options{})
+    response := api.Post[Test]("http://localhost:8080/docker/test/5", struct{test string}{test: "test"},api.Options{})
     fmt.Println(response.Test)
 }
