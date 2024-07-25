@@ -2,6 +2,7 @@ package main
 
 import (
     "github.com/DraouiBilal/code-runner-backend-lib/routing"
+    "github.com/DraouiBilal/code-runner-backend-lib/api"
 	"fmt"
 	"log"
 	"net/http"
@@ -28,9 +29,14 @@ func main() {
 
 	log.Printf("Server starting on %s", server.FullAddr)
 
-	err := server.ListenAndServe()
+	//err := server.ListenAndServe()
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+    type Test struct {
+        Test string `json:"test"`
+    }
+    response := api.Post[Test]("http://localhost:8080/docker/test/5", struct{test string}{test: "test"},api.Options{})
+    fmt.Println(response.Test)
 }
