@@ -1,42 +1,35 @@
 package main
 
 import (
-    "github.com/DraouiBilal/code-runner-backend-lib/routing"
-    "github.com/DraouiBilal/code-runner-backend-lib/api"
 	"fmt"
+	//"github.com/DraouiBilal/code-runner-backend-lib/api"
+	"github.com/DraouiBilal/code-runner-backend-lib/routing"
 	"log"
 	"net/http"
 )
 
-
 func main() {
-    dockerRouter := routing.Router{
-        Name: "docker",
-    }	
+	server := routing.Server{}
+	dockerRouter := &routing.Router{
+		Name: "docker",
+	}
 
-   dockerRouter.Get("/test/{id}", func (w http.ResponseWriter, req *http.Request){
-       fmt.Println(req.PathValue("id"))
-       fmt.Println(req.PathValue(""))
-        fmt.Fprint(w,"Testing if it works")
-    }, []routing.Middleware{})
-    server := routing.Server{}
-    
-    server.AddRouter(&dockerRouter)
+	dockerRouter.Get("/test/{id}", func(w http.ResponseWriter, req *http.Request) {
+		routing.Utils.WriteJSON(w, struct{ Test string }{Test: req.PathValue("id")})
+	    w.WriteHeader(http.StatusCreated)
+	}, []routing.Middleware{})
 
-    server.InitServer(&routing.Options{
+	server.AddRouter(dockerRouter)
+
+	server.InitServer(&routing.Options{
 		Middlewares: []routing.Middleware{routing.Middlewares.Logging},
 	})
 
 	log.Printf("Server starting on %s", server.FullAddr)
 
-	//err := server.ListenAndServe()
+	err := server.ListenAndServe()
 
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-    type Test struct {
-        Test string `json:"test"`
-    }
-    response := api.Post[Test]("http://localhost:8080/docker/test/5", struct{test string}{test: "test"},api.Options{})
-    fmt.Println(response.Test)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
